@@ -34,7 +34,7 @@ export default {
                 success: function (data, status) {
                     if (status === 'success') {
 						data = JSON.parse(data);
-                        if (!data.length) {
+                        if (data.length === 0) {
 							callback('No Results', data)
                             return;
                         }
@@ -104,7 +104,8 @@ export default {
 	mounted() {
 		// get user from sessionStorage or empty object
 		// this is so the header displays the correct login
-		this.type = JSON.parse(sessionStorage.getItem('user')).type || '';
+		let user = JSON.parse(sessionStorage.getItem('user'));
+		this.type = user ? user.type : '';
 	}
 }
 </script>
@@ -113,9 +114,6 @@ export default {
 a, a:hover{
 	text-decoration: none;
 	color: inherit;
-}
-.btn {
-	margin: 10px 0px;
 }
 table {
 	width: 100%;

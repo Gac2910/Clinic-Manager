@@ -31,6 +31,10 @@
 				</form>
 			</div>
 			<div class="col-lg-8">
+				<Search
+					@emit-search="search" 
+					title="Search Patients">
+				 </Search>
 				<h1>Patients Table</h1>
 				<hr>
 				<table>
@@ -63,8 +67,12 @@
 </template>
 
 <script>
+import Search from "@/components/Search";
 export default {
 	name: 'Patients',
+	components: {
+		Search
+	},
 	data() {
 		return {
 			form: {
@@ -141,6 +149,27 @@ export default {
 						$this.patients = filteredForm;
 					});
 				}
+			});
+		},
+		search: function (searchTerm) {
+			let query = {
+				"$or": [
+					{"first_name": searchTerm},
+					{"last_name": searchTerm},
+					{"sex": searchTerm},
+					{"address": searchTerm},
+					{"zip_code": searchTerm},
+					{"phone_number": searchTerm},
+					{"birth_date": searchTerm}
+				]
+			};
+			let $this = this;
+			this.$emit('emit-query', 'Patients', query, (err, data) => {
+				if (err) {
+					Swal.fire(err, '', 'error');
+					return;
+				}
+				$this.patients = data;
 			});
 		},
 		clearForm: function () {

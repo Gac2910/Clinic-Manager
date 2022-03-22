@@ -21,9 +21,7 @@
 				<router-link to="/Doctors">
 					<button class="btn btn-light">Doctors</button>
 				</router-link>
-				<router-link to="/User">
-					<button class="btn btn-light">My Account</button>
-				</router-link>
+				
 			</div>
 		</div>	
 		<div class="row adminBanner" v-if="type === '1'">

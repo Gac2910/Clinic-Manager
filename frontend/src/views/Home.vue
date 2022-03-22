@@ -33,6 +33,9 @@
 					<div class="col-12">
 						<h1>Welcome {{user.username}}</h1>
 						<button @click="logout" class="btn btn-danger">Logout</button>
+						<router-link to="/User">
+							<button class="btn btn-primary">My Account</button>
+						</router-link>
 					</div>
 				</div>
 			</div>
@@ -89,5 +92,8 @@ export default {
 <style>
 .col-lg-6 {
 	padding: 15px;
+}
+.btn {
+	margin: 5px;
 }
 </style>

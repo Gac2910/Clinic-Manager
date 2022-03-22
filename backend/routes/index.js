@@ -6,10 +6,10 @@ const mongoDB = require('mongodb');
 const client = new MongoClient(_uri, { useUnifiedTopology: true, sslValidate: false });
 client.connect(err => {
 	if (err) throw err;
-	console.log('Connceted to MongoDBAtlas - Clinic')
+	console.log('Connected to MongoDBAtlas - Clinic')
 });
 
-// ------- returns user for login -------
+// ------- return user for login -------
 router.post('/login', (req, res) => {
 	let credentials = req.body;
 	client.db(_db).collection('Users').findOne(credentials, (err, user) => {
@@ -25,15 +25,22 @@ router.post('/login', (req, res) => {
 // ------- get documents -------
 router.post('/query/:collection', (req, res) => {
 	let collection = req.params.collection;
+	let query = req.body;
+	if (query.$or) {
+		// access each object in $or array
+		for (let object of query.$or) {
+			// access each key in object
+			for (let key in object) {
+				// set value of object as the value in regex
+				object[key] = new RegExp(object[key], 'gi');
+			}
+		}
+	}
 	client.connect(err => { 
 		if (err) throw err;
-		client.db(_db).collection(collection).find(req.body).toArray((err, result) => {
+		client.db(_db).collection(collection).find(query).toArray((err, result) => {
 			if (err) throw err;
-			if (result.length === 0) {
-				res.status(404).end('No Results');
-				return;
-			}
-			res.send(JSON.stringify(result));
+			res.status(200).send(JSON.stringify(result));
 		});	
 	});
 });
