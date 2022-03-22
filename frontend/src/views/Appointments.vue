@@ -1,85 +1,93 @@
 <template>
-	<div class="container">
+	<div class="container" v-if="loggedUser.type">
 		<div class="row">
 			<div class="col-lg-4">
-				<h1>Appointments</h1>
-				<hr>
-				<h3 v-if="formType === 'insert'">Add A New Appointment</h3>
-				<h3 v-if="formType === 'update'">Update A Appointment</h3>
-				<form onsubmit="return false">
-					<label for="status">Status</label>
-					<select v-model="form.status" id="status" class="form-control">
-						<option value="" hidden>Select Status</option>
-						<option value="Open">Open</option>
-						<option value="Closed">Closed</option>
-						<option value="Delayed">Delayed</option>
-						<option value="Missed">Missed</option>
-						<option value="Cancelled">Cancelled</option>
-					</select>
-					<label for="location">Location</label>
-					<input v-model="form.location" type="text" id="location" class="form-control" placeholder="Location">
-					<label for="date">Date</label>
-					<input v-model="form.date" type="date" id="date" class="form-control">
-					<label for="time">Time</label>
-					<select v-model="form.time" id="time" class="form-control">
-						<option value="" hidden>Select Time</option>
-						<option value="9:00 AM">9:00 AM</option>
-						<option value="9:30 AM">9:30 AM</option>
-						<option value="10:00 AM">10:00 AM</option>
-						<option value="10:30 AM">10:30 AM</option>
-						<option value="11:00 AM">11:00 AM</option>
-						<option value="11:30 AM">11:30 AM</option>
-						<option value="12:00 PM">12:00 PM</option>
-						<option value="12:30 PM">12:30 PM</option>
-						<option value="1:00 PM">1:00 PM</option>
-						<option value="1:30 PM">1:30 PM</option>
-						<option value="2:00 PM">2:00 PM</option>
-						<option value="2:30 PM">2:30 PM</option>
-						<option value="3:00 PM">3:00 PM</option>
-						<option value="3:30 PM">3:30 PM</option>
-						<option value="4:00 PM">4:00 PM</option>
-						<option value="4:30 PM">4:30 PM</option>
-						<option value="5:00 PM">5:00 PM</option>
-					</select>
-					<label for="doctor">Doctor</label>
-					<select id="doctor" class="form-control"></select>
-					<label for="patient">Patient</label>
-					<select id="patient" class="form-control"></select>
-					<button v-if="formType === 'insert'" @click="submitInsertClick" class="btn btn-success" type="submit" style="width:100%">Submit</button>
-					<button v-if="formType === 'update'" @click="submitUpdateClick" class="btn btn-success" type="submit" style="width:100%">Update</button>
-				</form>
+				<Box title="Appointments" hr>
+					<h3 v-if="formType === 'insert'">Add A New Appointment</h3>
+					<h3 v-if="formType === 'update'">Update A Appointment</h3>
+					<form onsubmit="return false">
+						<label for="status">Status</label>
+						<select v-model="form.status" id="status" class="form-control">
+							<option value="" hidden>Select Status</option>
+							<option value="Open">Open</option>
+							<option value="Closed">Closed</option>
+							<option value="Delayed">Delayed</option>
+							<option value="Missed">Missed</option>
+							<option value="Cancelled">Cancelled</option>
+						</select>
+						<label for="location">Location</label>
+						<input v-model="form.location" type="text" id="location" class="form-control" placeholder="Location">
+						<label for="date">Date</label>
+						<input v-model="form.date" type="date" id="date" class="form-control">
+						<label for="time">Time</label>
+						<select v-model="form.time" id="time" class="form-control">
+							<option value="" hidden>Select Time</option>
+							<option value="9:00 AM">9:00 AM</option>
+							<option value="9:30 AM">9:30 AM</option>
+							<option value="10:00 AM">10:00 AM</option>
+							<option value="10:30 AM">10:30 AM</option>
+							<option value="11:00 AM">11:00 AM</option>
+							<option value="11:30 AM">11:30 AM</option>
+							<option value="12:00 PM">12:00 PM</option>
+							<option value="12:30 PM">12:30 PM</option>
+							<option value="1:00 PM">1:00 PM</option>
+							<option value="1:30 PM">1:30 PM</option>
+							<option value="2:00 PM">2:00 PM</option>
+							<option value="2:30 PM">2:30 PM</option>
+							<option value="3:00 PM">3:00 PM</option>
+							<option value="3:30 PM">3:30 PM</option>
+							<option value="4:00 PM">4:00 PM</option>
+							<option value="4:30 PM">4:30 PM</option>
+							<option value="5:00 PM">5:00 PM</option>
+						</select>
+						<label for="doctor">Doctor</label>
+						<select id="doctor" class="form-control">
+							<option value="" hidden>Select Doctor</option>
+						</select>
+						<label for="patient">Patient</label>
+						<select id="patient" class="form-control">
+							<option value="" hidden>Select Patient</option>
+						</select>
+						<button v-if="formType === 'insert'" @click="submitInsertClick" class="btn btn-success" type="submit" style="width:100%">Submit</button>
+						<button v-if="formType === 'update'" @click="submitUpdateClick" class="btn btn-success" type="submit" style="width:100%">Update</button>
+					</form>
+				</Box>
 			</div>
 			<div class="col-lg-8">
-				<Search
-					@emit-search="search" 
-					title="Search Appointments">
-				 </Search>
-				<h1>Appointments Table</h1>
-				<hr>
-				<table>
-					<thead>
-						<tr>
-							<th>Status</th>
-							<th>Location</th>
-							<th>Date</th>
-							<th>Time</th>
-							<th>Doctor</th>
-							<th>Patient</th>
-						</tr>
-					</thead>
-					<tr v-for="(appointment, i) in appointments" :key="i">
-						<td>{{appointment.status}}</td>
-						<td>{{appointment.location}}</td>
-						<td>{{appointment.date}}</td>
-						<td>{{appointment.time}}</td>
-						<td>{{appointment.doctor.first_name}} {{appointment.doctor.last_name}}</td>
-						<td>{{appointment.patient.first_name}} {{appointment.patient.last_name}}</td>
-						<td>
-							<i class="fa fa-refresh" @click="updateIconClick(appointment)"></i>
-							<i class="fa fa-trash" @click="deleteIconClick(appointment._id)"></i>
-						</td>
-					</tr>
-				</table>
+				<Box title="Search Appointments" hr>
+					<Search
+						@emit-search="search">
+					</Search>
+				</Box>
+				<Box title="Appointments Table" hr>
+					<table>
+						<thead>
+							<tr>
+								<th>Status</th>
+								<th>Location</th>
+								<th>Date</th>
+								<th>Time</th>
+								<th>Doctor</th>
+								<th>Patient</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="(appointment, i) in appointments" :key="i">
+								<td>{{appointment.status}}</td>
+								<td>{{appointment.location}}</td>
+								<td>{{appointment.date}}</td>
+								<td>{{appointment.time}}</td>
+								<td>{{appointment.doctor.first_name}} {{appointment.doctor.last_name}}</td>
+								<td>{{appointment.patient.first_name}} {{appointment.patient.last_name}}</td>
+								<td>
+									<i class="fa fa-refresh" @click="updateIconClick(appointment)"></i>
+									<i class="fa fa-trash" @click="deleteIconClick(appointment._id)"></i>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</Box>
 			</div>
 		</div>
 	</div>
@@ -87,10 +95,12 @@
 
 <script>
 import Search from "@/components/Search";
+import Box from "@/components/Box";
 export default {
 	name: 'Appointments',
 	components: {
-		Search
+		Search,
+		Box
 	},
 	data() {
 		return {
@@ -107,6 +117,7 @@ export default {
 			patients: [],
 			formType: 'insert',
 			updateID: '',
+			loggedUser: {}
 		}
 	},
 	methods: {
@@ -203,8 +214,7 @@ export default {
 					{"doctor.first_name": searchTerm},
 					{"doctor.last_name": searchTerm},
 					{"patient.first_name": searchTerm},
-					{"patient.last_name": searchTerm},
-
+					{"patient.last_name": searchTerm}
 				]
 			};
 			let $this = this;
@@ -262,6 +272,11 @@ export default {
 	mounted () {
 		// get all appointments
 		this.getAll();
+		// get logged user
+		this.loggedUser = JSON.parse(sessionStorage.getItem('user')) || {};
+        if (!this.loggedUser.type) {
+            Swal.fire('Login to view this collection.', '','info');
+		}
 		// get doctors and patients and
 		// add options to select elements
 		let $this = this;

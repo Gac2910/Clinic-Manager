@@ -4,6 +4,7 @@ import Patients from "@/views/Patients";
 import Doctors from "@/views/Doctors";
 import Appointments from "@/views/Appointments";
 import User from "@/views/User";
+import AllUsers from "@/views/AllUsers";
 
 global.baseURL = 'http://localhost:8888';
 
@@ -32,6 +33,11 @@ const routes = [
 		path: "/User",
 		name: "User",
 		component: User
+	},
+	{
+		path: "/AllUsers",
+		name: "AllUsers",
+		component: AllUsers
 	}
 ];
 

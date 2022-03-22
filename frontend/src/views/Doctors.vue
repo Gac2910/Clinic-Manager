@@ -1,49 +1,53 @@
 <template>
-	<div class="container">
+	<div class="container" v-if="loggedUser.type">
 		<div class="row">
 			<div class="col-lg-4" v-if="loggedUser.type === '1'">
-				<h1>Doctors</h1>
-				<hr>
-				<h3 v-if="formType === 'insert'">Add A New Doctor</h3>
-				<h3 v-if="formType === 'update'">Update A Doctor</h3>
-				<form onsubmit="return false">
-					<label for="first_name">First Name</label>
-					<input v-model="form.first_name" type="text" id="first_name" class="form-control" placeholder="First Name">
-					<label for="last_name">Last Name</label>
-					<input v-model="form.last_name" type="text" id="last_name" class="form-control" placeholder="Last Name">
-					<label for="phone_number">Phone Number</label>
-					<input v-model="form.phone_number" type="tel" id="phone_number" class="form-control" placeholder="Phone Number">
-					<label for="specialty">Specialty</label>
-					<input v-model="form.specialty" type="tel" id="specialty" class="form-control" placeholder="Specialty">
-					<button v-if="formType === 'insert'" @click="submitInsertClick" class="btn btn-success" type="submit" style="width:100%">Submit</button>
-					<button v-if="formType === 'update'" @click="submitUpdateClick" class="btn btn-success" type="submit" style="width:100%">Update</button>
-				</form>
+				<Box title="Doctors" hr>
+					<h3 v-if="formType === 'insert'">Add A New Doctor</h3>
+					<h3 v-if="formType === 'update'">Update A Doctor</h3>
+					<form onsubmit="return false">
+						<label for="first_name">First Name</label>
+						<input v-model="form.first_name" type="text" id="first_name" class="form-control" placeholder="First Name">
+						<label for="last_name">Last Name</label>
+						<input v-model="form.last_name" type="text" id="last_name" class="form-control" placeholder="Last Name">
+						<label for="phone_number">Phone Number</label>
+						<input v-model="form.phone_number" type="tel" id="phone_number" class="form-control" placeholder="Phone Number">
+						<label for="specialty">Specialty</label>
+						<input v-model="form.specialty" type="tel" id="specialty" class="form-control" placeholder="Specialty">
+						<button v-if="formType === 'insert'" @click="submitInsertClick" class="btn btn-success" type="submit" style="width:100%">Submit</button>
+						<button v-if="formType === 'update'" @click="submitUpdateClick" class="btn btn-success" type="submit" style="width:100%">Update</button>
+					</form>
+				</Box>
 			</div>
 			<div class="col-lg-8">
-				<Search
-					@emit-search="search" 
-					title="Search Doctors">
-				 </Search>
-				<h1>Doctors Table</h1>
-				<hr>
-				<table>
-					<thead>
-						<tr>
-							<th>Full Name</th>
-							<th>Phone Number</th>
-							<th>Specialty</th>
-						</tr>
-					</thead>
-					<tr v-for="(doctor, i) in doctors" :key="i">
-						<td>{{doctor.first_name}} {{doctor.last_name}}</td>
-						<td>{{doctor.phone_number}}</td>
-						<td>{{doctor.specialty}}</td>
-						<td v-if="loggedUser.type === '1'">
-							<i class="fa fa-refresh" @click="updateIconClick(doctor)"></i>
-							<i class="fa fa-trash" @click="deleteIconClick(doctor._id)"></i>
-						</td>
-					</tr>
-				</table>
+				<Box title="Search Doctors" hr>
+					<Search
+						@emit-search="search">
+					</Search>
+				</Box>
+				<Box title="Doctors Table" hr>
+					<table>
+						<thead>
+							<tr>
+								<th>Full Name</th>
+								<th>Phone Number</th>
+								<th>Specialty</th>
+								<th v-if="loggedUser.type === '1'">Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="(doctor, i) in doctors" :key="i">
+								<td>{{doctor.first_name}} {{doctor.last_name}}</td>
+								<td>{{doctor.phone_number}}</td>
+								<td>{{doctor.specialty}}</td>
+								<td v-if="loggedUser.type === '1'">
+									<i class="fa fa-refresh" @click="updateIconClick(doctor)"></i>
+									<i class="fa fa-trash" @click="deleteIconClick(doctor._id)"></i>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</Box>
 			</div>
 		</div>
 	</div>
@@ -51,10 +55,12 @@
 
 <script>
 import Search from "@/components/Search";
+import Box from "@/components/Box";
 export default {
 	name: 'Doctors',
 	components: {
-		Search
+		Search,
+		Box
 	},
 	data() {
 		return {

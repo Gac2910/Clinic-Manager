@@ -1,29 +1,39 @@
 <template>
-	<div class="container">
+	<div class="container" v-if="loggedUser.type">
 		<div class="row">
 			<div class="col-lg-4">
-				<h1>User Account</h1>
-				<hr>
-				<h3>Edit Your Credentials</h3>
-				<button @click="usernameForm" class="btn btn-success" style="width:100%">Change Username</button>
-				<button @click="passwordForm" class="btn btn-success" style="width:100%">Change Password</button>
+				<Box title="User Account" hr>
+					<h3>Edit Your Credentials</h3>
+					<button @click="usernameForm" class="btn btn-primary">Change Username</button>
+					<button @click="passwordForm" class="btn btn-primary">Change Password</button>
+				</Box>
+				<Box title="Your Information" hr>
+					<p><strong>Username: </strong>{{loggedUser.username}}</p>
+					<p><strong>Password: </strong>{{loggedUser.password}}</p>
+					<p><strong>Account Type: </strong>{{loggedUser.type==='1'?'Admin':'Staff'}}</p>
+					<router-link to="/">
+						<button class="btn btn-primary">
+							Back To Home
+						</button>
+					</router-link>
+				</Box>
 			</div>
 			<div class="col-lg-8">
 				<form v-if="formType === 'username'" onsubmit="return false">
-					<h1>Change Username</h1>
-					<hr>
-					<label for="username">Enter New Username</label>
-					<input v-model="loggedUser.username" type="text" id="username" class="form-control">
-					<button @click="changeUsername" class="btn btn-success" style="width:100%">Change Username</button>
+					<Box title="Change Username" hr>
+						<label for="username">Enter New Username</label>
+						<input v-model="loggedUser.username" type="text" id="username" class="form-control">
+						<button @click="changeUsername" class="btn btn-success">Change Username</button>
+					</Box>
 				</form>
 				<form v-if="formType === 'password'" onsubmit="return false">
-					<h1>Change Password</h1>
-					<hr>
-					<label for="oldPassword">Enter Old Password</label>
-					<input type="text" id="oldPassword" class="form-control">
-					<label for="newPassword">Enter New Password</label>
-					<input type="password" id="newPassword" class="form-control">
-					<button @click="changePassword" class="btn btn-success" style="width:100%">Change Password</button>
+					<Box title="Change Password" hr>
+						<label for="oldPassword">Enter Old Password</label>
+						<input type="text" id="oldPassword" class="form-control">
+						<label for="newPassword">Enter New Password</label>
+						<input type="password" id="newPassword" class="form-control">
+						<button @click="changePassword" class="btn btn-success">Change Password</button>
+					</Box>
 				</form>
 			</div>
 		</div>
@@ -31,8 +41,12 @@
 </template>
 
 <script>
+import Box from "@/components/Box"
 export default {
 	name: 'Users',
+	components: {
+		Box
+	},
 	data() {
 		return {
 			loggedUser: {},
@@ -83,11 +97,17 @@ export default {
 		}
 	},
 	mounted () {
+		// get logged user
 		this.loggedUser = JSON.parse(sessionStorage.getItem('user')) || {};
+        if (!this.loggedUser.type) {
+            Swal.fire('You are not logged in.', '','info');
+		}
 	}
 }
 </script>
 
-<style>
-
+<style scoped>
+.btn-primary {	
+	width: 100%;
+}
 </style>

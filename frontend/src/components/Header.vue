@@ -1,27 +1,31 @@
 <template>
 	<div class="container-fluid">
 		<div class="row">
-			<div class="col-sm-6">
+			<div class="col-md-2">
 				<h2>
 					<router-link to="/">
 						Clinic
 					</router-link>
 				</h2>
 			</div>
-			<div class="col-sm-6" v-if="type">
-				<router-link to="/">
-					<button class="btn btn-light">Home</button>
-				</router-link>
-				<router-link to="/Patients">
-					<button class="btn btn-light">Patients</button>
-				</router-link>
-				<router-link to="/Appointments">
-					<button class="btn btn-light">Appointments</button>
-				</router-link>
-				<router-link to="/Doctors">
-					<button class="btn btn-light">Doctors</button>
-				</router-link>
-				
+			<div class="col-sm-10" v-if="type">
+				<nav>
+					<router-link to="/">
+						<button class="btn">Home</button>
+					</router-link>
+					<router-link to="/Patients">
+						<button class="btn">Patients</button>
+					</router-link>
+					<router-link to="/Appointments">
+						<button class="btn">Appointments</button>
+					</router-link>
+					<router-link to="/Doctors">
+						<button class="btn">Doctors</button>
+					</router-link>
+					<router-link to="/AllUsers" v-if="type === '1'">
+						<button class="btn">All Users</button>
+					</router-link>
+				</nav>
 			</div>
 		</div>	
 		<div class="row adminBanner" v-if="type === '1'">
@@ -44,7 +48,7 @@ export default {
 
 <style scoped>
 	.container-fluid {
-		background: rgb(78, 78, 78);
+		background: rgb(0, 0, 0);
 		color: white;
 	}
 	h2 {
@@ -57,15 +61,24 @@ export default {
 	}
 	.btn {
 		margin: 5px 5px;
+		background: transparent;
+		color: white;
+	}
+	.btn:hover {
+		background: rgba(255, 255, 255, 0.25);
+		border-bottom: 1px solid white;
 	}
 	.adminBanner {
-		background-color: red
+		background-color: rgb(211, 71, 71)
 	}
 	.staffBanner {
-		background-color: #0dcaf0;
+		background-color: #0eaac9;
 	}
 	.row p {
 		margin: 0;
 		font-size: 20px;
+	}
+	nav {
+		float: right;
 	}
 </style>

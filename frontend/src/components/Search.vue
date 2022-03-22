@@ -1,7 +1,5 @@
 <template>
 	<div>
-		<h1>{{title}}</h1>
-		<hr>
 		<form onsubmit="return false">
 			<input 
 				v-model="searchTerm" 
@@ -21,9 +19,6 @@
 <script>
 export default {
 	name: 'Search',
-	props: {
-		title: String
-	},
 	data() {
 		return {
 			searchTerm: ''
@@ -40,5 +35,6 @@ export default {
 	}
 	button {
 		width: 20%;
+		margin: 0px 5px !important;
 	}
 </style>

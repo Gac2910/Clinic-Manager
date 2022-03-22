@@ -49,6 +49,11 @@ router.post('/query/:collection', (req, res) => {
 router.post('/insert/:collection', (req, res) => {
 	let collection = req.params.collection;
 	let form = req.body;
+	// create id manually because sometimes mongo 
+	// would only insert an empty string for the id. not sure why
+	let id = new mongoDB.ObjectId();
+	form._id = id;
+	console.log(form)
 	client.db(_db).collection(collection).insertOne(form, (err, result) => { 
 		if (err) throw err;
 		res.status(200).end();

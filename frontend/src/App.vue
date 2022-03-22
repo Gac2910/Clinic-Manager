@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<Header
-			:type="type">
+			:type="userType">
 		</Header>
 		<router-view
 			@emit-query="queryCollection"
@@ -22,7 +22,7 @@ export default {
 	},
 	data() {
 		return {
-			type: '',
+			userType: '',
 		}
 	},
 	methods: {
@@ -94,29 +94,30 @@ export default {
                 }
             });
 		},
-		// emit function from home page sets the login type for the header (0, 1, or undefined)
-		// 0 and 1 are staff and admin
-		// undefined is no user
 		updateLoginStatus: function (type) {
-			this.type = type;
+			this.userType = type;
 		}
     },
 	mounted() {
-		// get user from sessionStorage or empty object
-		// this is so the header displays the correct login
 		let user = JSON.parse(sessionStorage.getItem('user'));
-		this.type = user ? user.type : '';
+		this.userType = user ? user.type : '';
 	}
 }
 </script>
 
 <style>
+body {
+	background: rgb(217, 234, 243);
+}
 a, a:hover{
 	text-decoration: none;
 	color: inherit;
 }
 table {
 	width: 100%;
+}
+.btn-success, .btn-primary {
+	margin: 5px 0 !important;
 }
 .fa-trash, .fa-refresh {
 	font-size: 25px;
@@ -125,5 +126,16 @@ table {
 }
 .fa:hover {
 	color: blue;
+}
+table {
+	width: 100%;
+	text-align: center;
+}
+thead tr {
+	background: gray;
+	color: white;
+}
+tbody tr:nth-child(even) {
+	background: rgb(216, 216, 216);
 }
 </style>
