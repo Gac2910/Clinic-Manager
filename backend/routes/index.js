@@ -3,16 +3,17 @@ const router = express.Router();
 const { MongoClient } = require('mongodb');
 const mongoDB = require('mongodb');
 
-const client = new MongoClient(_uri, { useUnifiedTopology: true, sslValidate: false });
+const client = new MongoClient(process.env.URI, { useUnifiedTopology: true, sslValidate: false });
 client.connect(err => {
 	if (err) throw err;
 	console.log('Connected to MongoDBAtlas - Clinic')
 });
+const database = process.env.DB
 
 // ------- return user for login -------
 router.post('/login', (req, res) => {
 	let credentials = req.body;
-	client.db(_db).collection('Users').findOne(credentials, (err, user) => {
+	client.db(database).collection('Users').findOne(credentials, (err, user) => {
 		if (err) throw err;
 		if (user === null) {
 			res.status(404).end();
@@ -38,7 +39,7 @@ router.post('/query/:collection', (req, res) => {
 	}
 	client.connect(err => { 
 		if (err) throw err;
-		client.db(_db).collection(collection).find(query).toArray((err, result) => {
+		client.db(database).collection(collection).find(query).toArray((err, result) => {
 			if (err) throw err;
 			res.status(200).send(JSON.stringify(result));
 		});	
@@ -54,7 +55,7 @@ router.post('/insert/:collection', (req, res) => {
 	let id = new mongoDB.ObjectId();
 	form._id = id;
 	console.log(form)
-	client.db(_db).collection(collection).insertOne(form, (err, result) => { 
+	client.db(database).collection(collection).insertOne(form, (err, result) => { 
 		if (err) throw err;
 		res.status(200).end();
 	});
@@ -68,7 +69,7 @@ router.put('/update/:collection/:id', (req, res) => {
 	delete form._id;
 	let query = { _id: new mongoDB.ObjectId(id) };
 	let newValues = { $set: form };
-	client.db(_db).collection(collection).updateOne(query, newValues, (err, result) => {
+	client.db(database).collection(collection).updateOne(query, newValues, (err, result) => {
 		if (err) throw err;
 		res.status(200).end();
 	});
@@ -79,7 +80,7 @@ router.delete('/delete/:collection/:id', (req, res) => {
 	let id = req.params.id;
 	let collection = req.params.collection;
 	let query = { _id: new mongoDB.ObjectId(id) };
-	client.db(_db).collection(collection).deleteOne(query, (err, result) => {
+	client.db(database).collection(collection).deleteOne(query, (err, result) => {
 		if (err) throw err;
 		res.status(200).end();
 	});

@@ -19,9 +19,8 @@ app.use(cors());
 // define full path of public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// global variables
-global._db = 'ClinicDB';
-global._uri = 'mongodb+srv://291012:1017@clinic-cluster.ddihn.mongodb.net/ClinicDB?retryWrites=true&w=majority';
+// load .env file into process.env object
+require("dotenv").config();
 
 // routes
 app.use("/", require("./routes/index"));
