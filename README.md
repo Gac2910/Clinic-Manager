@@ -1,4 +1,4 @@
-# 02-Clinic
+# Clinic-Manager
 Clinic manager using MongoDb Atlas, Express and Vue.
 To Start Project:
 - start backend with 'npm start' in terminal
