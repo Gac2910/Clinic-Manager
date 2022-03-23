@@ -8,7 +8,8 @@
 			@emit-insert="insertDocument"
 			@emit-update="updateDocument"
 			@emit-delete="deleteDocument"
-			@emit-login-status="updateLoginStatus">
+			@emit-login-status="updateLoginStatus"
+			@emit-pagination="pagination">
 		</router-view>
 	</div>
 </template>
@@ -96,6 +97,36 @@ export default {
 		},
 		updateLoginStatus: function (type) {
 			this.userType = type;
+		},
+		pagination: function (rowsShown, rowsTotal) {
+			$(document).ready(function () {
+				rowsShown = rowsShown === '' ? 5 : rowsShown;
+				let pages = rowsTotal / rowsShown;
+				// create pagination nav buttons
+				$('#paginationNav').html('')
+				for (let i = 0; i < pages; i++) {
+					$('#paginationNav').append(`<button data-active="${i}" class="btn btn-primary" style="margin:5px 3px!important">${i + 1}</button>`);
+				}
+				// show only the rowsShown amount
+				$('#dataTable tbody tr').css('display','none');
+				$('#dataTable tbody tr').slice(0, rowsShown).show();
+				// add css class to first button
+				$('#paginationNav button').filter(':first').addClass('activePagination');
+
+				// add on click event to buttons
+				$('#paginationNav button').on('click', function () {
+					// toggle css class
+					$('#paginationNav button').removeClass('activePagination');
+					$(this).addClass('activePagination');
+					// determine start and end item using value from rel attribute
+					let activePage = $(this).data('active');
+					let startItem = activePage * rowsShown;
+					let endItem = startItem + rowsShown;
+					// show rows between startItem and endItem and animate
+					$('#dataTable tbody tr').css('opacity','0.0').hide();
+					$('#dataTable tbody tr').slice(startItem, endItem).css('display','table-row').animate({opacity:1}, 300);
+				});
+			});
 		}
     },
 	mounted() {
@@ -137,5 +168,16 @@ thead tr {
 }
 tbody tr:nth-child(even) {
 	background: rgb(216, 216, 216);
+}
+.activePagination {
+	background: rgb(37, 71, 134);
+}
+#numberOfRows {
+	width: 30%;
+	margin: 5px 0;
+	height: 30px;
+}
+#dataTable tbody tr {
+	display: none;
 }
 </style>

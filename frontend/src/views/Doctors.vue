@@ -26,7 +26,15 @@
 					</Search>
 				</Box>
 				<Box title="Doctors Table" hr>
-					<table>
+					<input 
+						v-model="rowsShown"
+						@change="$emit('emit-pagination', rowsShown, doctors.length)" 
+						type="number" 
+						id="numberOfRows" 
+						min="1"
+						class="form-control" 
+						placeholder="Enter number of rows">
+					<table id="dataTable">
 						<thead>
 							<tr>
 								<th>Full Name</th>
@@ -47,6 +55,7 @@
 							</tr>
 						</tbody>
 					</table>
+					<div id="paginationNav"></div>
 				</Box>
 			</div>
 		</div>
@@ -73,7 +82,8 @@ export default {
 			doctors: [],
 			formType: 'insert',
 			updateID: '',
-			loggedUser: {}
+			loggedUser: {},
+			rowsShown: ''
 		}
 	},
 	methods: {
@@ -85,9 +95,16 @@ export default {
 					return;
 				}
 				$this.doctors = data;
+				$this.emitPagination();
 			});
 		},
 		submitInsertClick: function () {
+			for (let key in this.form) {
+				if (!this.form[key].trim()) {
+					Swal.fire('Error', `Please enter ${key}`, 'error');
+					return;
+				}
+			}
 			let $this = this;
 			this.$emit('emit-insert', 'Doctors', this.form, (err) => {
 				if (err) {
@@ -160,6 +177,9 @@ export default {
 			for (let property in this.form) {
 				this.form[property] = '';
 			}
+		},
+		emitPagination: function () {
+			this.$emit('emit-pagination', this.rowsShown, this.doctors.length);
 		}
 	},
 	mounted () {

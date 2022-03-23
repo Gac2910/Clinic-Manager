@@ -60,7 +60,15 @@
 					</Search>
 				</Box>
 				<Box title="Appointments Table" hr>
-					<table>
+					<input 
+						v-model="rowsShown"
+						@change="$emit('emit-pagination', rowsShown, appointments.length)" 
+						type="number" 
+						id="numberOfRows" 
+						min="1"
+						class="form-control" 
+						placeholder="Enter number of rows">
+					<table id="dataTable">
 						<thead>
 							<tr>
 								<th>Status</th>
@@ -78,8 +86,16 @@
 								<td>{{appointment.location}}</td>
 								<td>{{appointment.date}}</td>
 								<td>{{appointment.time}}</td>
-								<td>{{appointment.doctor.first_name}} {{appointment.doctor.last_name}}</td>
-								<td>{{appointment.patient.first_name}} {{appointment.patient.last_name}}</td>
+								<td class="doctorInfo">
+									<span @click="showDoctorDialog(appointment.doctor)">
+										{{appointment.doctor.first_name}} {{appointment.doctor.last_name}}
+									</span>
+								</td>
+								<td class="patientInfo">
+									<span @click="showPatientDialog(appointment.patient)">
+										{{appointment.patient.first_name}} {{appointment.patient.last_name}}
+									</span>
+								</td>
 								<td>
 									<i class="fa fa-refresh" @click="updateIconClick(appointment)"></i>
 									<i class="fa fa-trash" @click="deleteIconClick(appointment._id)"></i>
@@ -87,6 +103,7 @@
 							</tr>
 						</tbody>
 					</table>
+					<div id="paginationNav"></div>
 				</Box>
 			</div>
 		</div>
@@ -117,7 +134,8 @@ export default {
 			patients: [],
 			formType: 'insert',
 			updateID: '',
-			loggedUser: {}
+			loggedUser: {},
+			rowsShown: ''
 		}
 	},
 	methods: {
@@ -129,9 +147,17 @@ export default {
 					return;
 				}
 				$this.appointments = data;
+				$this.emitPagination();
 			});
 		},
 		submitInsertClick: function () {
+			for (let key in this.form) {
+				if (key === 'doctor' || key === 'patient') continue;
+				if (!this.form[key].trim()) {
+					Swal.fire('Error', `Please enter ${key}`, 'error');
+					return;
+				}
+			}
 			if (!this.validateAppointmentDateTime(this.appointments, this.form.date, this.form.time)) {
 				Swal.fire('Appointment date and time is not available', '', 'error');
 				return;
@@ -267,6 +293,32 @@ export default {
 				}
 			});
 			return validation;
+		},
+		showDoctorDialog: function (doctor) {
+			Swal.fire({
+				title: `Doctor ${doctor.first_name} ${doctor.last_name}`,
+				html: `
+					<p><strong>Name: </strong>${doctor.first_name} ${doctor.last_name}</p>
+					<p><strong>Phone Number: </strong>${doctor.phone_number}</p>
+					<p><strong>Specialty: </strong>${doctor.specialty}</p>
+				`
+			});
+		},
+		showPatientDialog: function (patient) {
+			Swal.fire({
+				title: `Patient ${patient.first_name} ${patient.last_name}`,
+				html: `
+					<p><strong>Name: </strong>${patient.first_name} ${patient.last_name}</p>
+					<p><strong>Sex: </strong>${patient.sex}</p>
+					<p><strong>Address: </strong>${patient.address}</p>
+					<p><strong>Zip Code: </strong>${patient.zip_code}</p>
+					<p><strong>Phone Number: </strong>${patient.phone_number}</p>
+					<p><strong>Birth Date: </strong>${patient.birth_date}</p>
+				`
+			});
+		},
+		emitPagination: function () {
+			this.$emit('emit-pagination', this.rowsShown, this.appointments.length);
 		}
 	},
 	mounted () {
@@ -311,5 +363,12 @@ export default {
 </script>
 
 <style>
-
+	.doctorInfo, .patientInfo {
+		color: rgb(60, 60, 172);
+		text-decoration: underline;
+		cursor: pointer;
+	}
+ 	.doctorInfo:hover, .patientInfo:hover {
+	 	color: blue;
+ 	}
 </style>
