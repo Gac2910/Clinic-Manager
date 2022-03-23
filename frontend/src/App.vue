@@ -108,8 +108,8 @@ export default {
 					$('#paginationNav').append(`<button data-active="${i}" class="btn btn-primary" style="margin:5px 3px!important">${i + 1}</button>`);
 				}
 				// show only the rowsShown amount
-				$('#dataTable tbody tr').css('display','none');
-				$('#dataTable tbody tr').slice(0, rowsShown).show();
+				$('#dataTable tbody tr').hide();
+				$('#dataTable tbody tr').slice(0, rowsShown).css('display','table-row');
 				// add css class to first button
 				$('#paginationNav button').filter(':first').addClass('activePagination');
 
@@ -123,7 +123,7 @@ export default {
 					let startItem = activePage * rowsShown;
 					let endItem = startItem + rowsShown;
 					// show rows between startItem and endItem and animate
-					$('#dataTable tbody tr').css('opacity','0.0').hide();
+					$('#dataTable tbody tr').hide();
 					$('#dataTable tbody tr').slice(startItem, endItem).css('display','table-row').animate({opacity:1}, 300);
 				});
 			});
