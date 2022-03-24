@@ -1,4 +1,5 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
 const router = express.Router();
 const { MongoClient } = require('mongodb');
 const mongoDB = require('mongodb');
@@ -13,13 +14,22 @@ const database = process.env.DB
 // ------- return user for login -------
 router.post('/login', (req, res) => {
 	let credentials = req.body;
-	client.db(database).collection('Users').findOne(credentials, (err, user) => {
+	client.db(database).collection('Users').findOne({'username': credentials.username}, async (err, user) => {
 		if (err) throw err;
-		if (user === null) {
+		// if username not found
+		if (!user) {
 			res.status(404).end();
 			return;
 		}
-		res.status(200).send(JSON.stringify(user))
+		// compare password and hash
+		let valid = await bcrypt.compare(credentials.password, user.password);
+		console.log(user.password)
+		if (valid) {
+			res.status(200).send(JSON.stringify(user));
+		}
+		else {
+			res.status(404).end();
+		}
 	});
 });
 
@@ -47,32 +57,79 @@ router.post('/query/:collection', (req, res) => {
 });
 
 // ------- insert a document -------
-router.post('/insert/:collection', (req, res) => {
+router.post('/insert/:collection', async (req, res) => {
 	let collection = req.params.collection;
 	let form = req.body;
-	// create id manually because sometimes mongo 
-	// would only insert an empty string for the id. not sure why
-	let id = new mongoDB.ObjectId();
-	form._id = id;
-	console.log(form)
-	client.db(database).collection(collection).insertOne(form, (err, result) => { 
-		if (err) throw err;
-		res.status(200).end();
-	});
+	if (collection === 'Users') {
+		// create hash of password using 12 salt rounds
+		const hash = await bcrypt.hash(form.password, 12);
+		form.password = hash;
+		// create id manually because sometimes mongo 
+		// would only insert an empty string for the id. not sure why
+		let id = new mongoDB.ObjectId();
+		form._id = id;
+		client.db(database).collection(collection).insertOne(form, (err, result) => { 
+			if (err) throw err;
+			res.status(200).end();
+		});
+	}
+	else {
+		// create id manually because sometimes mongo 
+		// would only insert an empty string for the id. not sure why
+		let id = new mongoDB.ObjectId();
+		form._id = id;
+		client.db(database).collection(collection).insertOne(form, (err, result) => { 
+			if (err) throw err;
+			res.status(200).end();
+		});
+	}
 });
 
 // ------- update a document -------
-router.put('/update/:collection/:id', (req, res) => {
+router.put('/update/:collection/:id', async (req, res) => {
 	let id = req.params.id;
 	let collection = req.params.collection;
 	let form = req.body;
 	delete form._id;
-	let query = { _id: new mongoDB.ObjectId(id) };
-	let newValues = { $set: form };
-	client.db(database).collection(collection).updateOne(query, newValues, (err, result) => {
-		if (err) throw err;
-		res.status(200).end();
-	});
+	if (form.personalAccount) {
+		if (form.personalAccount.changeUsername) {
+			delete form.personalAccount;
+			let query = { _id: new mongoDB.ObjectId(id) };
+			let newValues = { $set: form };
+			client.db(database).collection(collection).updateOne(query, newValues, (err, result) => {
+				if (err) throw err;
+				res.status(200).end();
+			});
+		}
+		else if (form.personalAccount.changePassword) {
+			delete form.personalAccount;
+			client.db(database).collection('Users').findOne({'username': form.username}, async (err, user) => {
+				let valid = await bcrypt.compare(form.oldPassword, user.password);
+				if (valid) {
+					delete form.oldPassword;
+					const hash = await bcrypt.hash(form.password, 12);
+					form.password = hash;
+					let query = { _id: new mongoDB.ObjectId(id) };
+					let newValues = { $set: form };
+					await client.db(database).collection(collection).updateOne(query, newValues, (err, result) => {
+						if (err) throw err;
+						res.status(200).end();
+					});
+				}
+				else {
+					res.status(404).json('Incorrect Password');
+				}
+			});
+		}
+	}
+	else {
+		let query = { _id: new mongoDB.ObjectId(id) };
+		let newValues = { $set: form };
+		client.db(database).collection(collection).updateOne(query, newValues, (err, result) => {
+			if (err) throw err;
+			res.status(200).end();
+		});
+	}
 });
 
 // ------- delete a document -------

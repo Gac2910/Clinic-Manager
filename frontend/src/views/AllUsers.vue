@@ -7,9 +7,9 @@
 					<h3 v-if="formType === 'update'">Update A User</h3>
 					<form onsubmit="return false">
 						<label for="username">Username</label>
-						<input v-model="form.username" type="text" id="username" class="form-control" placeholder="Username">
+						<input v-model="form.username" type="text" id="username" class="form-control" placeholder="Username" :readonly="formType === 'update'">
 						<label for="password">Password</label>
-						<input v-model="form.password" type="text" id="password" class="form-control" placeholder="Password">
+						<input v-model="form.password" type="text" id="password" class="form-control" placeholder="Password" :readonly="formType === 'update'">
 						<label for="staffRadio">Staff</label>
 						<input v-model="form.type" type="radio" name="userType" id="staffRadio" value="0" checked>
 						<br>
@@ -39,7 +39,7 @@
 						<thead>
 							<tr>
 								<th>Username</th>
-								<th>Password</th>
+								<th>Hash</th>
 								<th>Type</th>
 								<th>Actions</th>
 							</tr>
@@ -47,7 +47,7 @@
 						<tbody>
 							<tr v-for="(user, i) in users" :key="i">
 								<td>{{user.username}}</td>
-								<td>{{user.password}}</td>
+								<td>{{user.password.substring(0, 10)}}...</td>
 								<td>{{user.type === '1' ? 'Admin': 'Staff'}}</td>
 								<td>
 									<i class="fa fa-refresh" @click="updateIconClick(user)"></i>
@@ -77,7 +77,7 @@ export default {
 			form: {
 				username: '',
 				password: '',
-				type: '0',
+				type: '0'
 			},
 			users: [],
 			formType: 'insert',
@@ -99,6 +99,7 @@ export default {
 			});
 		},
 		submitInsertClick: function () {
+			this.form.password = $('#password').val();
 			for (let key in this.form) {
 				if (!this.form[key].trim()) {
 					Swal.fire('Error', `Please enter ${key}`, 'error');
@@ -118,6 +119,7 @@ export default {
 		},
 		submitUpdateClick: function () {
 			let $this = this;
+			console.log(this.form)
 			this.$emit('emit-update', 'Users', this.form, this.updateID, (err) => {
 				if (err) {
 					Swal.fire('Error', err, 'error');

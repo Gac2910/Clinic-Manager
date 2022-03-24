@@ -9,7 +9,6 @@
 				</Box>
 				<Box title="Your Information" hr>
 					<p><strong>Username: </strong>{{loggedUser.username}}</p>
-					<p><strong>Password: </strong>{{loggedUser.password}}</p>
 					<p><strong>Account Type: </strong>{{loggedUser.type==='1'?'Admin':'Staff'}}</p>
 					<router-link to="/">
 						<button class="btn btn-primary">
@@ -65,6 +64,8 @@ export default {
 				Swal.fire('Username can not be empty', '', 'error');
 				return;
 			}
+			this.loggedUser.personalAccount = {};
+			this.loggedUser.personalAccount.changeUsername = true;
 			let $this = this;
 			this.$emit('emit-update', 'Users', this.loggedUser, this.loggedUser._id, (err) => {
 				if (err) {
@@ -76,15 +77,14 @@ export default {
 			});
 		},
 		changePassword: function () {
-			if ($('#oldPassword').val() != this.loggedUser.password) {
-				Swal.fire('Old password is incorrect', '', 'error');
-				return;
-			}
-			if (!$('#newPassword').val().trim()) {
+			if (!$('#newPassword').val().trim() || !$('#oldPassword').val().trim()) {
 				Swal.fire('Password can not be empty', '', 'error');
 				return;
 			}
+			this.loggedUser.oldPassword = $('#oldPassword').val();
 			this.loggedUser.password = $('#newPassword').val();
+			this.loggedUser.personalAccount = {};
+			this.loggedUser.personalAccount.changePassword = true;
 			let $this = this;
 			this.$emit('emit-update', 'Users', this.loggedUser, this.loggedUser._id, (err) => {
 				if (err) {
