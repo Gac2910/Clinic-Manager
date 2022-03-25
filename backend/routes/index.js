@@ -94,6 +94,7 @@ router.put('/update/:collection/:id', async (req, res) => {
 	if (form.personalAccount) {
 		if (form.personalAccount.changeUsername) {
 			delete form.personalAccount;
+			delete form.password;
 			let query = { _id: new mongoDB.ObjectId(id) };
 			let newValues = { $set: form };
 			client.db(database).collection(collection).updateOne(query, newValues, (err, result) => {
