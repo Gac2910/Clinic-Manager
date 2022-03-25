@@ -3,13 +3,14 @@ const bcrypt = require('bcrypt');
 const router = express.Router();
 const { MongoClient } = require('mongodb');
 const mongoDB = require('mongodb');
+const URI = `mongodb+srv://${process.env.URIUSERNAME}:${process.env.URIPASSWORD}@${process.env.CLUSTER}.ddihn.mongodb.net/${process.env.DB}?retryWrites=true&w=majority`;
+const database = process.env.DB;
 
-const client = new MongoClient(process.env.URI, { useUnifiedTopology: true, sslValidate: false });
+const client = new MongoClient(URI, { useUnifiedTopology: true, sslValidate: false });
 client.connect(err => {
 	if (err) throw err;
 	console.log('Connected to MongoDBAtlas - Clinic')
 });
-const database = process.env.DB
 
 // ------- return user for login -------
 router.post('/login', (req, res) => {
@@ -23,7 +24,6 @@ router.post('/login', (req, res) => {
 		}
 		// compare password and hash
 		let valid = await bcrypt.compare(credentials.password, user.password);
-		console.log(user.password)
 		if (valid) {
 			res.status(200).send(JSON.stringify(user));
 		}
