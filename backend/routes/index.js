@@ -1,5 +1,5 @@
 const express = require('express');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const router = express.Router();
 const { MongoClient } = require('mongodb');
 const mongoDB = require('mongodb');
