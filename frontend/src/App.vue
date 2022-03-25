@@ -100,7 +100,7 @@ export default {
 		},
 		pagination: function (rowsShown, rowsTotal) {
 			$(document).ready(function () {
-				rowsShown = rowsShown === '' ? 5 : rowsShown;
+				rowsShown = rowsShown === '' ? 10 : rowsShown;
 				let pages = rowsTotal / rowsShown;
 				// create pagination nav buttons
 				$('#paginationNav').html('')
